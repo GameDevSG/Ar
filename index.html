@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Medicinal Plants AR Experience - Interactive 3D View</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/three.js/build/ar-threex-location-only.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body style="margin: 0; overflow: hidden;">
+    <div class="ui-container">
+        <select id="plantSelector" class="plant-dropdown">
+            <option value="">Select a Medicinal Plant</option>
+            <option value="Ahwagandha">Ashwagandha</option>
+            <option value="Cardamom">Cardamom</option>
+            <option value="Cinnamon">Cinnamon</option>
+            <option value="clove">Clove</option>
+            <option value="tulsi">Tulsi (Holy Basil)</option>
+            <option value="Turmeric">Turmeric</option>
+        </select>
+        <div class="info-card" id="plantInfo">
+            <h2>Select a plant from the dropdown</h2>
+            <p>The 3D model will appear in your space</p>
+        </div>
+        <div class="controls">
+            <button id="moveLeft">←</button>
+            <button id="moveForward">↑</button>
+            <button id="moveBack">↓</button>
+            <button id="moveRight">→</button>
+            <button id="rotateLeft">↺</button>
+            <button id="rotateRight">↻</button>
+            <button id="scaleUp">+</button>
+            <button id="scaleDown">-</button>
+        </div>
+    </div>
+
+    <a-scene embedded arjs='sourceType: webcam; debugUIEnabled: false; detectionMode: mono;'>
+        <!-- Camera -->
+        <a-entity camera position="0 1.6 0"></a-entity>
+
+        <!-- Light -->
+        <a-light type="ambient" intensity="1"></a-light>
+        <a-light type="directional" position="1 1 1" intensity="0.5"></a-light>
+
+        <!-- Container for the current model -->
+        <a-entity id="model-container" position="0 0 -2">
+            <!-- Models will be added here dynamically -->
+        </a-entity>
+    </a-scene>
+    </a-scene>
+
+    <script src="script.js"></script>
+</body>
+</html>
