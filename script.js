@@ -41,23 +41,24 @@ function updatePlantInfo(name, info) {
 // Function to toggle between AR modes
 function toggleARMode() {
     isMarkerMode = !isMarkerMode;
-    const markerlessScene = document.getElementById('markerlessScene');
-    const markerScene = document.getElementById('markerScene');
+    const markerlessContainer = document.getElementById('markerless-container');
     const modeButton = document.getElementById('arMode');
 
     if (isMarkerMode) {
-        markerlessScene.classList.add('scene-hidden');
-        markerScene.classList.remove('scene-hidden');
+        markerlessContainer.setAttribute('visible', 'false');
         modeButton.textContent = 'Switch to Markerless AR';
+        console.log('Switched to Marker AR mode');
     } else {
-        markerlessScene.classList.remove('scene-hidden');
-        markerScene.classList.add('scene-hidden');
+        markerlessContainer.setAttribute('visible', 'true');
         modeButton.textContent = 'Switch to Marker AR';
+        console.log('Switched to Markerless AR mode');
     }
 }
 
 // Function to load and display a model
 function loadModel(modelName) {
+    console.log(`Loading model: ${modelName}`);
+    
     // Load model for markerless scene
     const markerlessContainer = document.getElementById('markerless-container');
     if (currentMarkerlessModel) {
@@ -69,6 +70,12 @@ function loadModel(modelName) {
     currentMarkerlessModel.setAttribute('scale', '0.5 0.5 0.5');
     currentMarkerlessModel.setAttribute('rotation', '-90 0 0');
     currentMarkerlessModel.setAttribute('look-at', '[camera]');
+    currentMarkerlessModel.addEventListener('model-loaded', () => {
+        console.log('Markerless model loaded successfully');
+    });
+    currentMarkerlessModel.addEventListener('model-error', (error) => {
+        console.error('Error loading markerless model:', error);
+    });
     markerlessContainer.appendChild(currentMarkerlessModel);
 
     // Load model for marker-based scene
@@ -81,6 +88,12 @@ function loadModel(modelName) {
     currentMarkerModel.setAttribute('position', '0 0.5 0');
     currentMarkerModel.setAttribute('scale', '0.2 0.2 0.2');
     currentMarkerModel.setAttribute('rotation', '0 0 0');
+    currentMarkerModel.addEventListener('model-loaded', () => {
+        console.log('Marker model loaded successfully');
+    });
+    currentMarkerModel.addEventListener('model-error', (error) => {
+        console.error('Error loading marker model:', error);
+    });
     markerContainer.appendChild(currentMarkerModel);
 }
 
