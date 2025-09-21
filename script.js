@@ -25,7 +25,9 @@ const plantInfo = {
     }
 };
 
-let currentModel = null;
+let currentMarkerlessModel = null;
+let currentMarkerModel = null;
+let isMarkerMode = false;
 
 // Function to update the info card with plant details
 function updatePlantInfo(name, info) {
@@ -36,23 +38,50 @@ function updatePlantInfo(name, info) {
     `;
 }
 
+// Function to toggle between AR modes
+function toggleARMode() {
+    isMarkerMode = !isMarkerMode;
+    const markerlessScene = document.getElementById('markerlessScene');
+    const markerScene = document.getElementById('markerScene');
+    const modeButton = document.getElementById('arMode');
+
+    if (isMarkerMode) {
+        markerlessScene.classList.add('scene-hidden');
+        markerScene.classList.remove('scene-hidden');
+        modeButton.textContent = 'Switch to Markerless AR';
+    } else {
+        markerlessScene.classList.remove('scene-hidden');
+        markerScene.classList.add('scene-hidden');
+        modeButton.textContent = 'Switch to Marker AR';
+    }
+}
+
 // Function to load and display a model
 function loadModel(modelName) {
-    const container = document.getElementById('model-container');
-    
-    // Remove existing model if any
-    if (currentModel) {
-        container.removeChild(currentModel);
+    // Load model for markerless scene
+    const markerlessContainer = document.getElementById('markerless-container');
+    if (currentMarkerlessModel) {
+        markerlessContainer.removeChild(currentMarkerlessModel);
     }
+    currentMarkerlessModel = document.createElement('a-entity');
+    currentMarkerlessModel.setAttribute('gltf-model', `models/${modelName}.glb`);
+    currentMarkerlessModel.setAttribute('position', '0 0 -2');
+    currentMarkerlessModel.setAttribute('scale', '0.5 0.5 0.5');
+    currentMarkerlessModel.setAttribute('rotation', '-90 0 0');
+    currentMarkerlessModel.setAttribute('look-at', '[camera]');
+    markerlessContainer.appendChild(currentMarkerlessModel);
 
-    // Create new model entity
-    currentModel = document.createElement('a-entity');
-    currentModel.setAttribute('gltf-model', `models/${modelName}.glb`);
-    currentModel.setAttribute('position', '0 0 0');
-    currentModel.setAttribute('rotation', '-90 0 0');
-    currentModel.setAttribute('scale', '0.5 0.5 0.5');
-    
-    container.appendChild(currentModel);
+    // Load model for marker-based scene
+    const markerContainer = document.getElementById('marker-container');
+    if (currentMarkerModel) {
+        markerContainer.removeChild(currentMarkerModel);
+    }
+    currentMarkerModel = document.createElement('a-entity');
+    currentMarkerModel.setAttribute('gltf-model', `models/${modelName}.glb`);
+    currentMarkerModel.setAttribute('position', '0 0.5 0');
+    currentMarkerModel.setAttribute('scale', '0.2 0.2 0.2');
+    currentMarkerModel.setAttribute('rotation', '0 0 0');
+    markerContainer.appendChild(currentMarkerModel);
 }
 
 // Movement and rotation values
@@ -62,7 +91,11 @@ const SCALE_FACTOR = 1.2;
 
 document.addEventListener('DOMContentLoaded', () => {
     const plantSelector = document.getElementById('plantSelector');
-    const container = document.getElementById('model-container');
+    const markerlessContainer = document.getElementById('markerless-container');
+    const markerContainer = document.getElementById('marker-container');
+    
+    // Initialize AR mode toggle
+    document.getElementById('arMode').addEventListener('click', toggleARMode);
 
     // Handle plant selection
     plantSelector.addEventListener('change', (e) => {
@@ -75,27 +108,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Movement controls
     document.getElementById('moveLeft').addEventListener('click', () => {
+        const container = isMarkerMode ? markerContainer : markerlessContainer;
         const pos = container.getAttribute('position');
         container.setAttribute('position', `${pos.x - MOVE_DISTANCE} ${pos.y} ${pos.z}`);
     });
 
     document.getElementById('moveRight').addEventListener('click', () => {
+        const container = isMarkerMode ? markerContainer : markerlessContainer;
         const pos = container.getAttribute('position');
         container.setAttribute('position', `${pos.x + MOVE_DISTANCE} ${pos.y} ${pos.z}`);
     });
 
     document.getElementById('moveForward').addEventListener('click', () => {
+        const container = isMarkerMode ? markerContainer : markerlessContainer;
         const pos = container.getAttribute('position');
         container.setAttribute('position', `${pos.x} ${pos.y} ${pos.z - MOVE_DISTANCE}`);
     });
 
     document.getElementById('moveBack').addEventListener('click', () => {
+        const container = isMarkerMode ? markerContainer : markerlessContainer;
         const pos = container.getAttribute('position');
         container.setAttribute('position', `${pos.x} ${pos.y} ${pos.z + MOVE_DISTANCE}`);
     });
 
     // Rotation controls
     document.getElementById('rotateLeft').addEventListener('click', () => {
+        const currentModel = isMarkerMode ? currentMarkerModel : currentMarkerlessModel;
         if (currentModel) {
             const rot = currentModel.getAttribute('rotation');
             currentModel.setAttribute('rotation', `${rot.x} ${rot.y} ${rot.z - ROTATION_ANGLE}`);
@@ -103,6 +141,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     document.getElementById('rotateRight').addEventListener('click', () => {
+        const currentModel = isMarkerMode ? currentMarkerModel : currentMarkerlessModel;
         if (currentModel) {
             const rot = currentModel.getAttribute('rotation');
             currentModel.setAttribute('rotation', `${rot.x} ${rot.y} ${rot.z + ROTATION_ANGLE}`);
@@ -111,6 +150,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Scale controls
     document.getElementById('scaleUp').addEventListener('click', () => {
+        const currentModel = isMarkerMode ? currentMarkerModel : currentMarkerlessModel;
         if (currentModel) {
             const scale = currentModel.getAttribute('scale');
             currentModel.setAttribute('scale', 
@@ -119,6 +159,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     document.getElementById('scaleDown').addEventListener('click', () => {
+        const currentModel = isMarkerMode ? currentMarkerModel : currentMarkerlessModel;
         if (currentModel) {
             const scale = currentModel.getAttribute('scale');
             currentModel.setAttribute('scale', 

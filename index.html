@@ -10,6 +10,9 @@
 </head>
 <body style="margin: 0; overflow: hidden;">
     <div class="ui-container">
+        <div class="mode-toggle">
+            <button id="arMode" class="mode-button">Switch AR Mode (Marker/Markerless)</button>
+        </div>
         <select id="plantSelector" class="plant-dropdown">
             <option value="">Select a Medicinal Plant</option>
             <option value="Ahwagandha">Ashwagandha</option>
@@ -35,19 +38,26 @@
         </div>
     </div>
 
-    <a-scene embedded arjs='sourceType: webcam; debugUIEnabled: false; detectionMode: mono;'>
-        <!-- Camera -->
-        <a-entity camera position="0 1.6 0"></a-entity>
-
-        <!-- Light -->
+    <!-- Markerless Scene -->
+    <a-scene id="markerlessScene" embedded vr-mode-ui="enabled: false" arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;">
+        <a-camera gps-camera rotation-reader></a-camera>
         <a-light type="ambient" intensity="1"></a-light>
         <a-light type="directional" position="1 1 1" intensity="0.5"></a-light>
-
-        <!-- Container for the current model -->
-        <a-entity id="model-container" position="0 0 -2">
+        <a-entity id="markerless-container" position="0 -1 -3">
             <!-- Models will be added here dynamically -->
         </a-entity>
     </a-scene>
+
+    <!-- Marker-based Scene -->
+    <a-scene id="markerScene" embedded arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3; trackingMethod: best;" style="display: none;">
+        <a-entity camera></a-entity>
+        <a-light type="ambient" intensity="1"></a-light>
+        <a-light type="directional" position="1 1 1" intensity="0.5"></a-light>
+        <a-marker preset="hiro">
+            <a-entity id="marker-container" position="0 0 0" rotation="-90 0 0">
+                <!-- Models will be added here dynamically -->
+            </a-entity>
+        </a-marker>
     </a-scene>
 
     <script src="script.js"></script>
